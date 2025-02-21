@@ -7,7 +7,7 @@ import {
 } from './constants/queue.constants';
 import { SignUpDto } from '../auth/auth-dto/sign-up.dto';
 import { SignInDto } from '../auth/auth-dto/sign-in.dto';
-import { SignOutDto } from 'src/auth/auth-dto/sign-out.dto';
+import { SignOutDto } from '../auth/auth-dto/sign-out.dto';
 
 @Injectable()
 export class QueueService {
@@ -16,7 +16,7 @@ export class QueueService {
     private readonly authQueueClient: ClientProxy,
   ) {}
 
-  async authSignUp(signUpDto: SignUpDto) {
+  async queueAuthSignUp(signUpDto: SignUpDto) {
     try {
       const result = await firstValueFrom(
         this.authQueueClient.send({ cmd: AuthQueueEvents.SIGN_UP }, signUpDto),
@@ -27,7 +27,7 @@ export class QueueService {
     }
   }
 
-  async authSignIn(signInDto: SignInDto) {
+  async queueAuthSignIn(signInDto: SignInDto) {
     try {
       const result = await firstValueFrom(
         this.authQueueClient.send({ cmd: AuthQueueEvents.SIGN_IN }, signInDto),
@@ -38,7 +38,7 @@ export class QueueService {
     }
   }
 
-  async authSignOut(signOutDto: SignOutDto) {
+  async queueAuthSignOut(signOutDto: SignOutDto) {
     try {
       const result = await firstValueFrom(
         this.authQueueClient.send(

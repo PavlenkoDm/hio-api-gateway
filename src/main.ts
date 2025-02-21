@@ -11,6 +11,7 @@ async function bootstrap() {
 
   const configService = app.get<ConfigService>(ConfigService);
 
+  app.setGlobalPrefix('api');
   app.enableCors();
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
