@@ -13,6 +13,15 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   app.enableCors();
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      enableDebugMessages: true,
+      forbidUnknownValues: true,
+      stopAtFirstError: true,
+    }),
+  );
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
@@ -23,16 +32,6 @@ async function bootstrap() {
       },
     },
   });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      enableDebugMessages: true,
-      forbidUnknownValues: true,
-      stopAtFirstError: true,
-    }),
-  );
-
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Hio API Documentation')
     .setDescription(
@@ -45,7 +44,6 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, swaggerDocument);
 
   await app.startAllMicroservices();
-
   await app.listen(configService.get<number>('PORT'), () => {
     console.log(
       '\x1b[36m%s\x1b[0m',

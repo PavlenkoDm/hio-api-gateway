@@ -25,3 +25,7 @@ export enum ValidationPasswordErrMsg {
   NO_NUMBER = 'Password must contain at least one number',
   NO_SPECIAL_CHARACTERS = 'Password must contain at least one special character (example: !@#$%^&*)',
 }
+
+export enum QueueErrors {
+  HANDLER_NOT_DEFINED = 'There is no matching message handler defined',
+}

@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { QueueModule } from './queue/queue.module';
-import { GlobalExceptionFilter } from './exceptions-filters/global-exception.filter';
+import { GlobalExceptionFilter } from './exception-filters/global-exception.filter';
 
 @Module({
   imports: [AuthModule, ConfigModule.forRoot({ isGlobal: true }), QueueModule],

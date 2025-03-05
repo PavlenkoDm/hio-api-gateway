@@ -18,7 +18,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const statusCode = status;
     const path = request.url;
     let message =
       exception instanceof HttpException
@@ -31,7 +30,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     const logMessage = {
-      statusCode,
+      status,
       message,
       path,
       timestamp: new Date().toISOString(),
@@ -46,8 +45,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       console.error(logMessage);
     }
 
-    response.status(statusCode).json({
-      statusCode,
+    response.status(status).json({
+      status,
       timestamp: new Date().toISOString(),
       path,
       message,

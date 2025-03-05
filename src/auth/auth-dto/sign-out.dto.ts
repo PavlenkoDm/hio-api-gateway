@@ -1,10 +1,13 @@
-import { IsNotEmpty, IsEmail, Matches } from 'class-validator';
+import { IsNotEmpty, IsEmail, Matches, IsString } from 'class-validator';
 import {
   emailValidationRegExp,
   ValidationEmailErrMsg,
 } from '../auth-constants/auth.constants';
 import { ApiProperty } from '@nestjs/swagger';
-import { AuthSwaggerEmailConstants } from '../auth-constants/auth-swagger.constants';
+import {
+  AuthSwaggerEmailConstants,
+  AuthSwaggerTokenConstants,
+} from '../auth-constants/auth-swagger.constants';
 
 export class SignOutDto {
   @ApiProperty({
@@ -20,4 +23,30 @@ export class SignOutDto {
     message: ValidationEmailErrMsg.NOT_CORRECT_EMAIL_FORMAT,
   })
   email: string;
+
+  @ApiProperty({
+    example: AuthSwaggerTokenConstants.MONGO_TOKEN_EXAMPLE,
+    description: AuthSwaggerTokenConstants.DESCRIPTION,
+    type: String,
+    required: true,
+  })
+  @IsString()
+  refreshToken: string;
+}
+
+export class SignOutWithAccessTokenDto {
+  @IsNotEmpty({ message: ValidationEmailErrMsg.EMPTY_EMAIL })
+  @IsEmail({}, { message: ValidationEmailErrMsg.NOT_VALID_EMAIL })
+  @Matches(emailValidationRegExp, {
+    message: ValidationEmailErrMsg.NOT_CORRECT_EMAIL_FORMAT,
+  })
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  refreshToken: string;
+
+  @IsString()
+  @IsNotEmpty()
+  accessToken: string;
 }

@@ -10,4 +10,9 @@ export enum AuthQueueEvents {
   SIGN_UP = 'sign_up',
   SIGN_IN = 'sign_in',
   SIGN_OUT = 'sign_out',
+  JWT_GUARD = 'jwt_guard',
+}
+
+export enum QueueErrors {
+  HANDLER_NOT_DEFINED = 'no matching message handler defined',
 }

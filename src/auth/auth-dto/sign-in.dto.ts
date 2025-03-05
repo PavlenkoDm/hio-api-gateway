@@ -14,9 +14,11 @@ import {
   ValidationPasswordErrMsg,
 } from '../auth-constants/auth.constants';
 import {
+  AuthSwaggerApiResponseDescription,
   AuthSwaggerEmailConstants,
   AuthSwaggerPasswordConstants,
 } from '../auth-constants/auth-swagger.constants';
+import { HttpStatus } from '@nestjs/common';
 
 export class SignInDto {
   @ApiProperty({
@@ -58,4 +60,47 @@ export class SignInDto {
     message: ValidationPasswordErrMsg.NO_SPECIAL_CHARACTERS,
   })
   password: string;
+}
+
+export class UserDto {
+  @ApiProperty({
+    description: AuthSwaggerApiResponseDescription.MONGO_ID,
+  })
+  id: string;
+
+  @ApiProperty({
+    example: AuthSwaggerEmailConstants.EXAMPLE,
+    description: AuthSwaggerEmailConstants.DESCRIPTION,
+  })
+  email: string;
+
+  @ApiProperty({
+    description: AuthSwaggerApiResponseDescription.USER_ACCESS_TOKEN,
+  })
+  accessToken: string;
+
+  @ApiProperty({
+    description: AuthSwaggerApiResponseDescription.USER_REFRESH_TOKEN,
+  })
+  refreshToken: string;
+}
+
+export class SignInResponseDto {
+  @ApiProperty({
+    example: HttpStatus.OK,
+    description: AuthSwaggerApiResponseDescription.STATUS_CODE,
+  })
+  status: number;
+
+  @ApiProperty({
+    example: AuthSwaggerApiResponseDescription.USER_LOGGED_IN,
+    description: AuthSwaggerApiResponseDescription.SUCCESSFUL_AUTH,
+  })
+  message: string;
+
+  @ApiProperty({
+    description: AuthSwaggerApiResponseDescription.USER_IN_DB,
+    type: UserDto,
+  })
+  user: UserDto;
 }

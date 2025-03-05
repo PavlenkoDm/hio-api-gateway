@@ -1,10 +1,27 @@
-import { Body, Controller, HttpCode, Inject, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
+
 import { AuthService } from './auth.service';
-import { SignUpDto } from './auth-dto/sign-up.dto';
-import { SignInDto } from './auth-dto/sign-in.dto';
+import { SignUpDto, SignUpResponseDto } from './auth-dto/sign-up.dto';
+import { SignInDto, SignInResponseDto } from './auth-dto/sign-in.dto';
 import { SignOutDto } from './auth-dto/sign-out.dto';
 import { AuthSwaggerApiResponseDescription } from './auth-constants/auth-swagger.constants';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -14,64 +31,79 @@ export class AuthController {
   @Post('signup')
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: AuthSwaggerApiResponseDescription.SUCCESSFUL_REGISTRATION,
+    type: SignUpResponseDto,
   })
   @ApiResponse({
-    status: 400,
+    status: HttpStatus.BAD_REQUEST,
     description: AuthSwaggerApiResponseDescription.VALIDATION_ERROR,
   })
   @ApiResponse({
-    status: 500,
+    status: HttpStatus.CONFLICT,
+    description: AuthSwaggerApiResponseDescription.EMAIL_IN_USE,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: AuthSwaggerApiResponseDescription.SERVER_ERROR,
   })
-  async signUp(@Body() signUpDto: SignUpDto) {
-    return await this.authService.authSignUp(signUpDto);
+  signUp(@Body() signUpDto: SignUpDto) {
+    return this.authService.authSignUp(signUpDto);
   }
 
   @HttpCode(200)
   @Post('signin')
   @ApiOperation({ summary: 'Sign-in user' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: AuthSwaggerApiResponseDescription.SUCCESSFUL_AUTH,
+    type: SignInResponseDto,
   })
   @ApiResponse({
-    status: 400,
+    status: HttpStatus.BAD_REQUEST,
     description: AuthSwaggerApiResponseDescription.VALIDATION_ERROR,
   })
   @ApiResponse({
-    status: 401,
+    status: HttpStatus.UNAUTHORIZED,
     description: AuthSwaggerApiResponseDescription.UNAUTHORISED,
   })
   @ApiResponse({
-    status: 500,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: AuthSwaggerApiResponseDescription.SERVER_ERROR,
   })
-  async signIn(@Body() signInDto: SignInDto) {
-    return await this.authService.authSignIn(signInDto);
+  signIn(@Body() signInDto: SignInDto) {
+    return this.authService.authSignIn(signInDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Post('signout')
   @ApiOperation({ summary: 'Sign-out user' })
+  @ApiBearerAuth()
+  @ApiSecurity('bearer')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: AuthSwaggerApiResponseDescription.SUCCESSFUL_SIGNOUT,
   })
   @ApiResponse({
-    status: 400,
+    status: HttpStatus.BAD_REQUEST,
     description: AuthSwaggerApiResponseDescription.VALIDATION_ERROR,
   })
   @ApiResponse({
-    status: 404,
-    description: AuthSwaggerApiResponseDescription.USER_NOT_FOUND,
+    status: HttpStatus.UNAUTHORIZED,
+    description: AuthSwaggerApiResponseDescription.UNAUTHORISED,
   })
   @ApiResponse({
-    status: 500,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: AuthSwaggerApiResponseDescription.SERVER_ERROR,
   })
-  async signOut(@Body() signOutDto: SignOutDto) {
-    return await this.authService.authSignOut(signOutDto);
+  signOut(
+    @Request() req: { user: { email: string; accessToken: string } },
+    @Body() signOutDto: SignOutDto,
+  ) {
+    return this.authService.authSignOut({
+      ...signOutDto,
+      accessToken: req.user.accessToken,
+    });
   }
 }

@@ -18,6 +18,7 @@ import { QueueService } from './queue.service';
             queue: QueueNames.AUTH,
             queueOptions: {
               durable: true,
+              prefetchCount: 1,
             },
           },
         }),

@@ -14,9 +14,11 @@ import {
 } from '../auth-constants/auth.constants';
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  AuthSwaggerApiResponseDescription,
   AuthSwaggerEmailConstants,
   AuthSwaggerPasswordConstants,
 } from '../auth-constants/auth-swagger.constants';
+import { HttpStatus } from '@nestjs/common';
 
 export class SignUpDto {
   @ApiProperty({
@@ -58,4 +60,18 @@ export class SignUpDto {
     message: ValidationPasswordErrMsg.NO_SPECIAL_CHARACTERS,
   })
   password: string;
+}
+
+export class SignUpResponseDto {
+  @ApiProperty({
+    example: HttpStatus.CREATED,
+    description: AuthSwaggerApiResponseDescription.STATUS_CODE,
+  })
+  status: number;
+
+  @ApiProperty({
+    example: AuthSwaggerApiResponseDescription.USER_CREATED,
+    description: AuthSwaggerApiResponseDescription.SUCCESSFUL_REGISTRATION,
+  })
+  message: string;
 }
