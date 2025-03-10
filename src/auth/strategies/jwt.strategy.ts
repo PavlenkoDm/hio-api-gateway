@@ -3,7 +3,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 
-import { AccessTokenDto } from '../auth-dto/access-token.dto';
 import { QueueService } from '../../queue/queue.service';
 import { UserInJwtStrategyDto } from '../auth-dto/user.dto';
 
@@ -20,28 +19,22 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       passReqToCallback: true,
     });
   }
-  async validate(req: Request, payload: AccessTokenDto) {
-    // const authenticatedUser = this.queueService.queueAuthJwtGuard(payload);
-    // if (!authenticatedUser) {
-    //   return null;
-    // }
-    // const extractTokenFunction = ExtractJwt.fromAuthHeaderAsBearerToken();
-    // const token = extractTokenFunction(req);
-    // return Object.assign(authenticatedUser, { accessToken: token });
+  async validate(req: Request, payload: { id: string }) {
     return new Promise((resolve, reject) => {
-      this.queueService.queueAuthJwtGuard(payload).subscribe({
-        next: (authenticatedUser: UserInJwtStrategyDto) => {
-          if (!authenticatedUser) {
-            return resolve(null);
-          }
+      const extractTokenFunction = ExtractJwt.fromAuthHeaderAsBearerToken();
+      const token = extractTokenFunction(req);
+      this.queueService
+        .queueAuthJwtGuard({ ...payload, accToken: token })
+        .subscribe({
+          next: (authenticatedUser: UserInJwtStrategyDto) => {
+            if (!authenticatedUser) {
+              return resolve(null);
+            }
 
-          const extractTokenFunction = ExtractJwt.fromAuthHeaderAsBearerToken();
-          const token = extractTokenFunction(req);
-
-          resolve({ ...authenticatedUser, accessToken: token });
-        },
-        error: (err) => reject(err),
-      });
+            return resolve({ ...authenticatedUser, accessToken: token });
+          },
+          error: (err) => reject(err),
+        });
     });
   }
 }

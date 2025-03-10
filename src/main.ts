@@ -5,6 +5,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { QueueNames } from './queue/constants/queue.constants';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+//import * as passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -42,8 +43,10 @@ async function bootstrap() {
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, swaggerDocument);
+  //app.use(passport.initialize());
 
   await app.startAllMicroservices();
+
   await app.listen(configService.get<number>('PORT'), () => {
     console.log(
       '\x1b[36m%s\x1b[0m',
