@@ -11,6 +11,8 @@ import { SignUpDto } from '../auth/auth-dto/sign-up.dto';
 import { SignInDto } from '../auth/auth-dto/sign-in.dto';
 import { SignOutWithAccessTokenDto } from '../auth/auth-dto/sign-out.dto';
 import { AccessTokenDto } from '../auth/auth-dto/access-token.dto';
+import { RefreshTokenDto } from '../auth/auth-dto/refresh-token.dto';
+import { AuthRefreshDto } from 'src/auth/auth-dto/auth-refresh.dto';
 
 @Injectable()
 export class QueueService {
@@ -138,6 +140,82 @@ export class QueueService {
     const delay = 1000;
     return this.authQueueClient
       .send({ cmd: AuthQueueEvents.JWT_GUARD }, accessTokenDto)
+      .pipe(
+        retry({
+          count: retryAttempts,
+          delay: (error, retryCount) => {
+            if (
+              typeof error === 'string' &&
+              error.includes(QueueErrors.HANDLER_NOT_DEFINED)
+            ) {
+              console.log(
+                `Retrying... attempt ${retryCount}. (${QueueErrors.HANDLER_NOT_DEFINED})`,
+              );
+              return new Promise((resolve) => setTimeout(resolve, delay));
+            }
+            if (typeof error === 'object' && error.status) {
+              return throwError(
+                () => new HttpException(error.message, error.status),
+              );
+            }
+
+            return throwError(() => new Error(error));
+          },
+        }),
+        catchError((error) => {
+          if (typeof error === 'object' && error.status) {
+            return throwError(
+              () => new HttpException(error.message, error.status),
+            );
+          }
+          return throwError(() => new Error(error));
+        }),
+      );
+  }
+
+  queueAuthJwtRefreshGuard(refreshTokenDto: RefreshTokenDto) {
+    const retryAttempts = 3;
+    const delay = 1000;
+    return this.authQueueClient
+      .send({ cmd: AuthQueueEvents.JWT_REFRESH_GUARD }, refreshTokenDto)
+      .pipe(
+        retry({
+          count: retryAttempts,
+          delay: (error, retryCount) => {
+            if (
+              typeof error === 'string' &&
+              error.includes(QueueErrors.HANDLER_NOT_DEFINED)
+            ) {
+              console.log(
+                `Retrying... attempt ${retryCount}. (${QueueErrors.HANDLER_NOT_DEFINED})`,
+              );
+              return new Promise((resolve) => setTimeout(resolve, delay));
+            }
+            if (typeof error === 'object' && error.status) {
+              return throwError(
+                () => new HttpException(error.message, error.status),
+              );
+            }
+
+            return throwError(() => new Error(error));
+          },
+        }),
+        catchError((error) => {
+          if (typeof error === 'object' && error.status) {
+            return throwError(
+              () => new HttpException(error.message, error.status),
+            );
+          }
+          return throwError(() => new Error(error));
+        }),
+      );
+  }
+
+  queueAuthRefresh(authRefreshDto: AuthRefreshDto) {
+    const retryAttempts = 3;
+    const delay = 1000;
+    return this.authQueueClient
+      .send({ cmd: AuthQueueEvents.AUTH_REFRESH }, authRefreshDto)
       .pipe(
         retry({
           count: retryAttempts,

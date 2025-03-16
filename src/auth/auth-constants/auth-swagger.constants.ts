@@ -25,6 +25,7 @@ export enum AuthSwaggerApiResponseDescription {
   MONGO_ID = 'MongoDB id',
   USER_ACCESS_TOKEN = 'User access token',
   USER_REFRESH_TOKEN = 'User refresh token',
+  TOKENS_UPDATED = 'Access token and refresh token updated successfully',
 }
 
 export enum AuthSwaggerTokenConstants {

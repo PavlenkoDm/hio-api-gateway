@@ -22,13 +22,14 @@ import { SignInDto, SignInResponseDto } from './auth-dto/sign-in.dto';
 import { SignOutDto } from './auth-dto/sign-out.dto';
 import { AuthSwaggerApiResponseDescription } from './auth-constants/auth-swagger.constants';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { JwtAuthRefreshGuard } from './guards/jwt-refresh.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(@Inject() private readonly authService: AuthService) {}
 
-  @Post('signup')
+  @Post('sign-up')
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -52,7 +53,7 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Post('signin')
+  @Post('sign-in')
   @ApiOperation({ summary: 'Sign-in user' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -77,7 +78,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @Post('signout')
+  @Post('sign-out')
   @ApiOperation({ summary: 'Sign-out user' })
   @ApiBearerAuth()
   @ApiSecurity('bearer')
@@ -104,6 +105,41 @@ export class AuthController {
     return this.authService.authSignOut({
       ...signOutDto,
       accessToken: req.user.accessToken,
+    });
+  }
+
+  @UseGuards(JwtAuthRefreshGuard)
+  @HttpCode(200)
+  @Post('auth-refresh')
+  @ApiOperation({
+    summary:
+      'To update access and refresh tokens, send valid refresh token in authorization in headers',
+  })
+  @ApiBearerAuth()
+  @ApiSecurity('bearer')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: AuthSwaggerApiResponseDescription.TOKENS_UPDATED,
+    type: SignInResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: AuthSwaggerApiResponseDescription.VALIDATION_ERROR,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: AuthSwaggerApiResponseDescription.UNAUTHORISED,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: AuthSwaggerApiResponseDescription.SERVER_ERROR,
+  })
+  updateUserTokens(
+    @Request() req: { user: { email: string; refreshToken: string } },
+  ) {
+    return this.authService.authRefresh({
+      email: req.user.email,
+      refreshToken: req.user.refreshToken,
     });
   }
 }
