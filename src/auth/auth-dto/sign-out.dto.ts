@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsEmail, Matches, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
 import {
   emailValidationRegExp,
   ValidationEmailErrMsg,
 } from '../auth-constants/auth.constants';
-import { ApiProperty } from '@nestjs/swagger';
 import {
   AuthSwaggerEmailConstants,
   AuthSwaggerTokenConstants,

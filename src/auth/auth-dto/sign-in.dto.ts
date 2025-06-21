@@ -1,4 +1,6 @@
+import { HttpStatus } from '@nestjs/common';
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsString,
@@ -6,6 +8,8 @@ import {
   MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+
 import {
   emailValidationRegExp,
   passwordMinLength,
@@ -18,7 +22,6 @@ import {
   AuthSwaggerEmailConstants,
   AuthSwaggerPasswordConstants,
 } from '../auth-constants/auth-swagger.constants';
-import { HttpStatus } from '@nestjs/common';
 
 export class SignInDto {
   @ApiProperty({
@@ -60,6 +63,15 @@ export class SignInDto {
     message: ValidationPasswordErrMsg.NO_SPECIAL_CHARACTERS,
   })
   password: string;
+
+  @ApiProperty({
+    example: 'true || false',
+    type: Boolean,
+    default: false,
+  })
+  @Transform(({ value }) => value ?? false)
+  @IsBoolean()
+  rememberMe: boolean = false;
 }
 
 export class UserDto {

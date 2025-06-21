@@ -23,6 +23,7 @@ import { SignOutDto } from './auth-dto/sign-out.dto';
 import { AuthSwaggerApiResponseDescription } from './auth-constants/auth-swagger.constants';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { JwtAuthRefreshGuard } from './guards/jwt-refresh.guard';
+import { AuthRefreshResponseDto } from './auth-dto/auth-refresh.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -120,7 +121,7 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: AuthSwaggerApiResponseDescription.TOKENS_UPDATED,
-    type: SignInResponseDto,
+    type: AuthRefreshResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,

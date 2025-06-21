@@ -1,9 +1,11 @@
 export enum QueueNames {
   AUTH = 'auth',
+  PROJECTS = 'projects',
 }
 
 export enum QueueClientsNames {
   AUTH_QUEUE_CLIENT = 'AUTH_QUEUE_CLIENT',
+  PROJECTS_QUEUE_CLIENT = 'PROJECTS_QUEUE_CLIENT',
 }
 
 export enum AuthQueueEvents {
@@ -13,6 +15,10 @@ export enum AuthQueueEvents {
   JWT_GUARD = 'jwt_guard',
   JWT_REFRESH_GUARD = 'jwt_refresh_guard',
   AUTH_REFRESH = 'auth_refresh',
+}
+
+export enum ProjectsQueueEvents {
+  CREATE_PROJECT = 'create_project',
 }
 
 export enum QueueErrors {

@@ -33,6 +33,16 @@ async function bootstrap() {
       },
     },
   });
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get<string>('RABBITMQ_CONNECTION_URL')],
+      queue: QueueNames.PROJECTS,
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Hio API Documentation')
     .setDescription(

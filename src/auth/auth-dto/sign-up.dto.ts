@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsEmail,
@@ -5,6 +7,7 @@ import {
   MinLength,
   IsString,
 } from 'class-validator';
+
 import {
   emailValidationRegExp,
   passwordMinLength,
@@ -12,13 +15,11 @@ import {
   ValidationEmailErrMsg,
   ValidationPasswordErrMsg,
 } from '../auth-constants/auth.constants';
-import { ApiProperty } from '@nestjs/swagger';
 import {
   AuthSwaggerApiResponseDescription,
   AuthSwaggerEmailConstants,
   AuthSwaggerPasswordConstants,
 } from '../auth-constants/auth-swagger.constants';
-import { HttpStatus } from '@nestjs/common';
 
 export class SignUpDto {
   @ApiProperty({
