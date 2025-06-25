@@ -24,6 +24,22 @@
 
 ## Description
 
+# HIO App
+
+This is a project based on microservices architecture. It includes:
+
+- [API Gateway (this repo)](https://github.com/PavlenkoDm/hio-api-gateway)
+- [Auth Service](https://github.com/PavlenkoDm/hio-auth-microservice)
+- [Projects Service](https://github.com/PavlenkoDm/hio-projects-microservice)
+
+# Application architecture
+
+<p align="center">
+  <img src="./docs/img/HIO-structure.jpeg" alt="Structure of the HIO Application"/>
+  <br/>
+  <i>Structure Of The HIO Application</i>
+</p>
+
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
