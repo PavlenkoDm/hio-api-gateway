@@ -1,7 +1,7 @@
 import { Controller, Inject, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { ProjectsService } from './projects.service';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Projects')
 @Controller('projects')

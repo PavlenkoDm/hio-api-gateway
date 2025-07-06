@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ProjectsQueueService } from 'src/queue/projects-queue.service';
+import { ProjectsQueueService } from '../queue/projects-queue.service';
 
 @Injectable()
 export class ProjectsService {
