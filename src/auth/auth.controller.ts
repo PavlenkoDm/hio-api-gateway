@@ -3,7 +3,6 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Inject,
   Post,
   UseGuards,
   Request,
@@ -17,18 +16,21 @@ import {
 } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
+
 import { SignUpDto, SignUpResponseDto } from './auth-dto/sign-up.dto';
 import { SignInDto, SignInResponseDto } from './auth-dto/sign-in.dto';
 import { SignOutDto } from './auth-dto/sign-out.dto';
+import { AuthRefreshResponseDto } from './auth-dto/auth-refresh.dto';
+
 import { AuthSwaggerApiResponseDescription } from './auth-constants/auth-swagger.constants';
+
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { JwtAuthRefreshGuard } from './guards/jwt-refresh.guard';
-import { AuthRefreshResponseDto } from './auth-dto/auth-refresh.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(@Inject() private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('sign-up')
   @ApiOperation({ summary: 'Register new user' })

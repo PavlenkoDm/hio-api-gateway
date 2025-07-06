@@ -3,16 +3,9 @@ import { catchError, retry, throwError } from 'rxjs';
 import { ClientProxy } from '@nestjs/microservices';
 
 import {
-  /*AuthQueueEvents*/
+  ProjectsQueueEvents,
   QueueClientsNames,
-  /*QueueErrors,*/
 } from './constants/queue.constants';
-// import { SignUpDto } from '../auth/auth-dto/sign-up.dto';
-// import { SignInDto } from '../auth/auth-dto/sign-in.dto';
-// import { SignOutWithAccessTokenDto } from '../auth/auth-dto/sign-out.dto';
-// import { AccessTokenDto } from '../auth/auth-dto/access-token.dto';
-// import { RefreshTokenDto } from '../auth/auth-dto/refresh-token.dto';
-// import { AuthRefreshDto } from 'src/auth/auth-dto/auth-refresh.dto';
 
 @Injectable()
 export class ProjectsQueueService {
@@ -21,6 +14,9 @@ export class ProjectsQueueService {
     private readonly projectsQueueClient: ClientProxy,
   ) {}
 
+  queueProjectCreate({}) {
+    return this.projectsQueueSender(ProjectsQueueEvents.CREATE_PROJECT, {});
+  }
   // queueAuthSignUp(signUpDto: SignUpDto) {
   //   return this.authQueueSender(AuthQueueEvents.SIGN_UP, signUpDto);
   // }
