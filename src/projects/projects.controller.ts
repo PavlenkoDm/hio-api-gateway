@@ -1,15 +1,16 @@
-import { Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { ProjectsService } from './projects.service';
+import { CreateProjectDto } from './projects-dto/create-project.dto';
 
 @ApiTags('Projects')
 @Controller('projects')
 export class ProjectsController {
-  constructor(@Inject() private readonly projectsService: ProjectsService) {}
+  constructor(private readonly projectsService: ProjectsService) {}
 
   @Post('create')
-  create() {
-    return this.projectsService.createProject();
+  create(@Body() createProjectDto: CreateProjectDto) {
+    return this.projectsService.createProject(createProjectDto);
   }
 }

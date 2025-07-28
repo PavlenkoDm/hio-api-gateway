@@ -6,6 +6,7 @@ import {
   ProjectsQueueEvents,
   QueueClientsNames,
 } from './constants/queue.constants';
+import { CreateProjectDto } from '../projects/projects-dto/create-project.dto';
 
 @Injectable()
 export class ProjectsQueueService {
@@ -14,8 +15,11 @@ export class ProjectsQueueService {
     private readonly projectsQueueClient: ClientProxy,
   ) {}
 
-  queueProjectCreate({}) {
-    return this.projectsQueueSender(ProjectsQueueEvents.CREATE_PROJECT, {});
+  queueProjectCreate(createProjectDto: CreateProjectDto) {
+    return this.projectsQueueSender(
+      ProjectsQueueEvents.CREATE_PROJECT,
+      createProjectDto,
+    );
   }
   // queueAuthSignUp(signUpDto: SignUpDto) {
   //   return this.authQueueSender(AuthQueueEvents.SIGN_UP, signUpDto);
