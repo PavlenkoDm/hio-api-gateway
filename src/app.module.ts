@@ -3,18 +3,18 @@ import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+//import { AuthModule } from './auth/auth.module';
 import { QueueModule } from './queue/queue.module';
 import { GlobalExceptionFilter } from './exception-filters/global-exception.filter';
-import { RedisModule } from './redis/redis.module';
+//import { RedisModule } from './redis/redis.module';
 import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
-    AuthModule,
+    //AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     QueueModule,
-    RedisModule,
+    //RedisModule,
     ProjectsModule,
   ],
   controllers: [AppController],

@@ -21,6 +21,12 @@ export class ProjectsQueueService {
       createProjectDto,
     );
   }
+
+  queueProjectDelete(id: number) {
+    return this.projectsQueueSender(ProjectsQueueEvents.DELETE_PROJECT_BY_ID, {
+      id,
+    });
+  }
   // queueAuthSignUp(signUpDto: SignUpDto) {
   //   return this.authQueueSender(AuthQueueEvents.SIGN_UP, signUpDto);
   // }

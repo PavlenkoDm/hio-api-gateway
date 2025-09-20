@@ -20,4 +20,15 @@ export class ProjectsService {
       });
     });
   }
+
+  deleteProject(id: number) {
+    return new Promise((resolve, reject) => {
+      this.projectsQueueService.queueProjectDelete(id).subscribe({
+        next: async (projectResponseDto: ProjectResponseDto) => {
+          return resolve(projectResponseDto);
+        },
+        error: (error) => reject(error),
+      });
+    });
+  }
 }
