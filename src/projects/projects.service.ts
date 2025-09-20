@@ -31,4 +31,15 @@ export class ProjectsService {
       });
     });
   }
+
+  getProject(id: number) {
+    return new Promise((resolve, reject) => {
+      this.projectsQueueService.queueProjectGet(id).subscribe({
+        next: async (projectResponseDto: ProjectResponseDto) => {
+          return resolve(projectResponseDto);
+        },
+        error: (error) => reject(error),
+      });
+    });
+  }
 }

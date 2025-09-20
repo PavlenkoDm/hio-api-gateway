@@ -27,6 +27,12 @@ export class ProjectsQueueService {
       id,
     });
   }
+
+  queueProjectGet(id: number) {
+    return this.projectsQueueSender(ProjectsQueueEvents.GET_PROJECT_BY_ID, {
+      id,
+    });
+  }
   // queueAuthSignUp(signUpDto: SignUpDto) {
   //   return this.authQueueSender(AuthQueueEvents.SIGN_UP, signUpDto);
   // }

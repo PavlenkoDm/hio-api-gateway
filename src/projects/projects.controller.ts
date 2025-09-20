@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Param,
   ParseIntPipe,
@@ -26,5 +27,10 @@ export class ProjectsController {
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.projectsService.deleteProject(id);
+  }
+
+  @Get(':id')
+  getById(@Param('id', ParseIntPipe) id: number) {
+    return this.projectsService.getProject(id);
   }
 }
