@@ -7,6 +7,7 @@ import {
   QueueClientsNames,
 } from './constants/queue.constants';
 import { CreateProjectDto } from '../projects/projects-dto/create-project.dto';
+import { StartProjectDto } from '../projects/projects-dto/start-project.dto';
 
 @Injectable()
 export class ProjectsQueueService {
@@ -33,100 +34,13 @@ export class ProjectsQueueService {
       id,
     });
   }
-  // queueAuthSignUp(signUpDto: SignUpDto) {
-  //   return this.authQueueSender(AuthQueueEvents.SIGN_UP, signUpDto);
-  // }
 
-  // queueAuthSignIn(signInDto: SignInDto) {
-  //   return this.authQueueSender(AuthQueueEvents.SIGN_IN, signInDto);
-  // }
-
-  // queueAuthSignOut(signOutWithAccessTokenDto: SignOutWithAccessTokenDto) {
-  //   return this.authQueueSender(
-  //     AuthQueueEvents.SIGN_OUT,
-  //     signOutWithAccessTokenDto,
-  //   );
-  // }
-
-  // queueAuthJwtGuard(accessTokenDto: AccessTokenDto) {
-  //   const retryAttempts = 3;
-  //   const delay = 1000;
-  //   return this.authQueueClient
-  //     .send({ cmd: AuthQueueEvents.JWT_GUARD }, accessTokenDto)
-  //     .pipe(
-  //       retry({
-  //         count: retryAttempts,
-  //         delay: (error, retryCount) => {
-  //           if (
-  //             typeof error === 'string' &&
-  //             error.includes(QueueErrors.HANDLER_NOT_DEFINED)
-  //           ) {
-  //             console.log(
-  //               `Retrying... attempt ${retryCount}. (${QueueErrors.HANDLER_NOT_DEFINED})`,
-  //             );
-  //             return new Promise((resolve) => setTimeout(resolve, delay));
-  //           }
-  //           if (typeof error === 'object' && error.status) {
-  //             return throwError(
-  //               () => new HttpException(error.message, error.status),
-  //             );
-  //           }
-
-  //           return throwError(() => new Error(error));
-  //         },
-  //       }),
-  //       catchError((error) => {
-  //         if (typeof error === 'object' && error.status) {
-  //           return throwError(
-  //             () => new HttpException(error.message, error.status),
-  //           );
-  //         }
-  //         return throwError(() => new Error(error));
-  //       }),
-  //     );
-  // }
-
-  // queueAuthJwtRefreshGuard(refreshTokenDto: RefreshTokenDto) {
-  //   const retryAttempts = 3;
-  //   const delay = 1000;
-  //   return this.authQueueClient
-  //     .send({ cmd: AuthQueueEvents.JWT_REFRESH_GUARD }, refreshTokenDto)
-  //     .pipe(
-  //       retry({
-  //         count: retryAttempts,
-  //         delay: (error, retryCount) => {
-  //           if (
-  //             typeof error === 'string' &&
-  //             error.includes(QueueErrors.HANDLER_NOT_DEFINED)
-  //           ) {
-  //             console.log(
-  //               `Retrying... attempt ${retryCount}. (${QueueErrors.HANDLER_NOT_DEFINED})`,
-  //             );
-  //             return new Promise((resolve) => setTimeout(resolve, delay));
-  //           }
-  //           if (typeof error === 'object' && error.status) {
-  //             return throwError(
-  //               () => new HttpException(error.message, error.status),
-  //             );
-  //           }
-
-  //           return throwError(() => new Error(error));
-  //         },
-  //       }),
-  //       catchError((error) => {
-  //         if (typeof error === 'object' && error.status) {
-  //           return throwError(
-  //             () => new HttpException(error.message, error.status),
-  //           );
-  //         }
-  //         return throwError(() => new Error(error));
-  //       }),
-  //     );
-  // }
-
-  // queueAuthRefresh(authRefreshDto: AuthRefreshDto) {
-  //   return this.authQueueSender(AuthQueueEvents.AUTH_REFRESH, authRefreshDto);
-  // }
+  queueProjectStart(id: number, startProjectDto: StartProjectDto) {
+    return this.projectsQueueSender(ProjectsQueueEvents.START_PROJECT, {
+      id,
+      startProjectDto,
+    });
+  }
 
   private projectsQueueSender(keyOfEvent: string, dto: object) {
     const retryAttempts = 5;

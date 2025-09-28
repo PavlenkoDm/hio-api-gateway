@@ -7,11 +7,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './projects-dto/create-project.dto';
+import { StartProjectDto } from './projects-dto/start-project.dto';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -32,5 +34,13 @@ export class ProjectsController {
   @Get(':id')
   getById(@Param('id', ParseIntPipe) id: number) {
     return this.projectsService.getProject(id);
+  }
+
+  @Put('start/:id')
+  start(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() startProjectDto: StartProjectDto,
+  ) {
+    return this.projectsService.startProject(id, startProjectDto);
   }
 }

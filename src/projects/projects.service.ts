@@ -5,6 +5,10 @@ import {
   CreateProjectDto,
   ProjectResponseDto,
 } from './projects-dto/create-project.dto';
+import {
+  StartProjectDto,
+  StartProjectResponseDto,
+} from './projects-dto/start-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -40,6 +44,19 @@ export class ProjectsService {
         },
         error: (error) => reject(error),
       });
+    });
+  }
+
+  startProject(id: number, startProjectDto: StartProjectDto) {
+    return new Promise((resolve, reject) => {
+      this.projectsQueueService
+        .queueProjectStart(id, startProjectDto)
+        .subscribe({
+          next: async (startProjectResponseDto: StartProjectResponseDto) => {
+            return resolve(startProjectResponseDto);
+          },
+          error: (error) => reject(error),
+        });
     });
   }
 }
