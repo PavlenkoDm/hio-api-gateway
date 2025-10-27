@@ -4,6 +4,7 @@ import { ProjectsQueueService } from '../queue/projects-queue.service';
 import {
   CreateProjectDto,
   ProjectResponseDto,
+  TeamMemberDto,
 } from './projects-dto/create-project.dto';
 import {
   StartProjectDto,
@@ -54,6 +55,19 @@ export class ProjectsService {
         .subscribe({
           next: async (startProjectResponseDto: StartProjectResponseDto) => {
             return resolve(startProjectResponseDto);
+          },
+          error: (error) => reject(error),
+        });
+    });
+  }
+
+  updateProjectMembers(projectId: number, teamMemberDto: TeamMemberDto) {
+    return new Promise((resolve, reject) => {
+      this.projectsQueueService
+        .queueUpdateProjectMembers(projectId, teamMemberDto)
+        .subscribe({
+          next: async (teamMemberDto: TeamMemberDto) => {
+            return resolve(teamMemberDto);
           },
           error: (error) => reject(error),
         });

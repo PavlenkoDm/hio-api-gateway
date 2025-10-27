@@ -12,7 +12,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './projects-dto/create-project.dto';
+import {
+  CreateProjectDto,
+  TeamMemberDto,
+} from './projects-dto/create-project.dto';
 import { StartProjectDto } from './projects-dto/start-project.dto';
 
 @ApiTags('Projects')
@@ -42,5 +45,13 @@ export class ProjectsController {
     @Body() startProjectDto: StartProjectDto,
   ) {
     return this.projectsService.startProject(id, startProjectDto);
+  }
+
+  @Put('update-members/:projectId')
+  updateMembers(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Body() teamMemberDto: TeamMemberDto,
+  ) {
+    return this.projectsService.updateProjectMembers(projectId, teamMemberDto);
   }
 }

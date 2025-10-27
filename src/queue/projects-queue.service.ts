@@ -6,7 +6,10 @@ import {
   ProjectsQueueEvents,
   QueueClientsNames,
 } from './constants/queue.constants';
-import { CreateProjectDto } from '../projects/projects-dto/create-project.dto';
+import {
+  CreateProjectDto,
+  TeamMemberDto,
+} from '../projects/projects-dto/create-project.dto';
 import { StartProjectDto } from '../projects/projects-dto/start-project.dto';
 
 @Injectable()
@@ -40,6 +43,13 @@ export class ProjectsQueueService {
       id,
       startProjectDto,
     });
+  }
+
+  queueUpdateProjectMembers(projectId: number, teamMemberDto: TeamMemberDto) {
+    return this.projectsQueueSender(
+      ProjectsQueueEvents.UPDATE_PROJECT_MEMBERS,
+      { projectId, teamMemberDto },
+    );
   }
 
   private projectsQueueSender(keyOfEvent: string, dto: object) {
