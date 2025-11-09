@@ -66,7 +66,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
             if (!authenticatedUser) {
               return resolve(null);
             }
-            return resolve({ ...authenticatedUser, refreshToken: token });
+            return resolve({
+              ...authenticatedUser,
+              refreshToken: token,
+            });
           },
           error: (error) => reject(error),
         });

@@ -50,8 +50,8 @@ export class ProjectsController {
   @Put('update-members/:projectId')
   updateMembers(
     @Param('projectId', ParseIntPipe) projectId: number,
-    @Body() teamMemberDto: TeamMemberDto,
+    @Body() teamMembers: TeamMemberDto[],
   ) {
-    return this.projectsService.updateProjectMembers(projectId, teamMemberDto);
+    return this.projectsService.updateProjectMembers(projectId, teamMembers);
   }
 }

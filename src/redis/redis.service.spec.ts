@@ -16,7 +16,10 @@ describe('RedisService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RedisService,
-        { provide: RedisClientName.RADIS_CACHE, useValue: redisClientMock },
+        {
+          provide: RedisClientName.RADIS_CACHE,
+          useValue: redisClientMock,
+        },
       ],
     }).compile();
 

@@ -20,7 +20,10 @@ describe('ProjectsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectsService,
-        { provide: ProjectsQueueService, useValue: projectsQueueServiceMock },
+        {
+          provide: ProjectsQueueService,
+          useValue: projectsQueueServiceMock,
+        },
       ],
     }).compile();
 

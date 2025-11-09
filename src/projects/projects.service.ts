@@ -61,13 +61,13 @@ export class ProjectsService {
     });
   }
 
-  updateProjectMembers(projectId: number, teamMemberDto: TeamMemberDto) {
+  updateProjectMembers(projectId: number, teamMembers: TeamMemberDto[]) {
     return new Promise((resolve, reject) => {
       this.projectsQueueService
-        .queueUpdateProjectMembers(projectId, teamMemberDto)
+        .queueUpdateProjectMembers(projectId, teamMembers)
         .subscribe({
-          next: async (teamMemberDto: TeamMemberDto) => {
-            return resolve(teamMemberDto);
+          next: async (teamMembers: TeamMemberDto[]) => {
+            return resolve(teamMembers);
           },
           error: (error) => reject(error),
         });

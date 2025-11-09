@@ -45,10 +45,10 @@ export class ProjectsQueueService {
     });
   }
 
-  queueUpdateProjectMembers(projectId: number, teamMemberDto: TeamMemberDto) {
+  queueUpdateProjectMembers(projectId: number, teamMembers: TeamMemberDto[]) {
     return this.projectsQueueSender(
       ProjectsQueueEvents.UPDATE_PROJECT_MEMBERS,
-      { projectId, teamMemberDto },
+      { projectId, teamMembers },
     );
   }
 

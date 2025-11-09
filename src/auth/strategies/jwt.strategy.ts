@@ -42,7 +42,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
               return resolve(null);
             }
 
-            return resolve({ ...authenticatedUser, accessToken: token });
+            return resolve({
+              ...authenticatedUser,
+              accessToken: token,
+            });
           },
           error: (err) => reject(err),
         });
