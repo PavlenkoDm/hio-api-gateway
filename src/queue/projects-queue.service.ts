@@ -54,10 +54,10 @@ export class ProjectsQueueService {
   }
 
   queueUpdateProject(id: number, updateProjectDto: Partial<UpdateProjectDto>) {
-    return this.projectsQueueSender(
-      ProjectsQueueEvents.UPDATE_PROJECT_MEMBERS,
-      { id, updateProjectDto },
-    );
+    return this.projectsQueueSender(ProjectsQueueEvents.UPDATE_PROJECT, {
+      id,
+      updateProjectDto,
+    });
   }
 
   private projectsQueueSender(keyOfEvent: string, dto: object) {
