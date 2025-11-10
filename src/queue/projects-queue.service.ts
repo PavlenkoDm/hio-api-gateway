@@ -11,6 +11,7 @@ import {
   TeamMemberDto,
 } from '../projects/projects-dto/create-project.dto';
 import { StartProjectDto } from '../projects/projects-dto/start-project.dto';
+import { UpdateProjectDto } from '../projects/projects-dto/update-project.dto';
 
 @Injectable()
 export class ProjectsQueueService {
@@ -49,6 +50,13 @@ export class ProjectsQueueService {
     return this.projectsQueueSender(
       ProjectsQueueEvents.UPDATE_PROJECT_MEMBERS,
       { projectId, teamMembers },
+    );
+  }
+
+  queueUpdateProject(id: number, updateProjectDto: Partial<UpdateProjectDto>) {
+    return this.projectsQueueSender(
+      ProjectsQueueEvents.UPDATE_PROJECT_MEMBERS,
+      { id, updateProjectDto },
     );
   }
 

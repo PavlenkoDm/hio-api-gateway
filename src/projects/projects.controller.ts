@@ -6,6 +6,7 @@ import {
   HttpCode,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import {
   TeamMemberDto,
 } from './projects-dto/create-project.dto';
 import { StartProjectDto } from './projects-dto/start-project.dto';
+import { UpdateProjectDto } from './projects-dto/update-project.dto';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -53,5 +55,13 @@ export class ProjectsController {
     @Body() teamMembers: TeamMemberDto[],
   ) {
     return this.projectsService.updateProjectMembers(projectId, teamMembers);
+  }
+
+  @Patch('update/:id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProjectDto: Partial<UpdateProjectDto>,
+  ) {
+    return this.projectsService.updateProject(id, updateProjectDto);
   }
 }

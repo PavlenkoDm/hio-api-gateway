@@ -10,6 +10,7 @@ import {
   StartProjectDto,
   StartProjectResponseDto,
 } from './projects-dto/start-project.dto';
+import { UpdateProjectDto } from './projects-dto/update-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -68,6 +69,19 @@ export class ProjectsService {
         .subscribe({
           next: async (teamMembers: TeamMemberDto[]) => {
             return resolve(teamMembers);
+          },
+          error: (error) => reject(error),
+        });
+    });
+  }
+
+  updateProject(id: number, updateProjectDto: Partial<UpdateProjectDto>) {
+    return new Promise((resolve, reject) => {
+      this.projectsQueueService
+        .queueUpdateProject(id, updateProjectDto)
+        .subscribe({
+          next: async (updatedProject: ProjectResponseDto) => {
+            return resolve(updatedProject);
           },
           error: (error) => reject(error),
         });

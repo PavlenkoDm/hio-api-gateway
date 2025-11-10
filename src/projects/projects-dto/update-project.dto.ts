@@ -32,21 +32,18 @@ import {
 
 // >>> Nested DTO
 export class TaskDto {
-  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  taskId?: string;
+  taskId: string;
 
-  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
   @MaxLength(255)
-  title?: string;
+  title: string;
 
-  @IsOptional()
   @IsBoolean()
-  isCompleted?: boolean = false;
+  isCompleted: boolean = false;
 }
 
 export class LanguageDto {
@@ -160,7 +157,7 @@ export class PublishDto {
   duration?: number;
 }
 
-// >>> Main DTO
+// >>> MAIN DTO
 export class UpdateProjectDto {
   @IsOptional()
   @ValidateNested()
