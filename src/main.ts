@@ -12,7 +12,7 @@ async function bootstrap() {
 
   const configService = app.get<ConfigService>(ConfigService);
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', { exclude: ['/'] });
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
