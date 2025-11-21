@@ -87,4 +87,15 @@ export class ProjectsService {
         });
     });
   }
+
+  getProjects() {
+    return new Promise((resolve, reject) => {
+      this.projectsQueueService.queueProjectsGet().subscribe({
+        next: async (projectResponseDto: ProjectResponseDto[]) => {
+          return resolve(projectResponseDto);
+        },
+        error: (error) => reject(error),
+      });
+    });
+  }
 }

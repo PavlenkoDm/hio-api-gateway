@@ -60,6 +60,10 @@ export class ProjectsQueueService {
     });
   }
 
+  queueProjectsGet() {
+    return this.projectsQueueSender(ProjectsQueueEvents.GET_PROJECTS, {});
+  }
+
   private projectsQueueSender(keyOfEvent: string, dto: object) {
     const retryAttempts = 5;
     const delay = 1000;

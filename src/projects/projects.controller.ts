@@ -64,4 +64,9 @@ export class ProjectsController {
   ) {
     return this.projectsService.updateProject(id, updateProjectDto);
   }
+
+  @Get()
+  getAll() {
+    return this.projectsService.getProjects();
+  }
 }
