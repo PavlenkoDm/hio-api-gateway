@@ -13,6 +13,12 @@ describe('ProjectsController', () => {
   let controller: ProjectsController;
   const projectsServiceMock = {
     createProject: jest.fn(),
+    deleteProject: jest.fn(),
+    getProject: jest.fn(),
+    startProject: jest.fn(),
+    updateProjectMembers: jest.fn(),
+    updateProject: jest.fn(),
+    getProjects: jest.fn(),
   };
 
   beforeEach(async () => {

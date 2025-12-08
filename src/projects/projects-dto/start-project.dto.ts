@@ -30,6 +30,7 @@ import {
   UserStatus,
   WorkDirection,
 } from '../projects-constants/project.constants';
+import { IsSafeInput } from '../../common/validators/is-safe-input.decorator';
 
 // export class CreateProjectDto {
 //   @ApiProperty({
@@ -75,8 +76,9 @@ export class StartTaskDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(1)
+  @MinLength(3)
   @MaxLength(255)
+  @IsSafeInput()
   title: string;
 
   @IsBoolean()
@@ -100,6 +102,9 @@ export class StartTeamMemberDto {
 
   @IsString()
   @IsNotEmpty()
+  @MinLength(5)
+  @MaxLength(255)
+  @IsSafeInput()
   name: string;
 
   @IsOptional()
@@ -126,18 +131,21 @@ export class StartBasicsDto {
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(100)
+  @IsSafeInput()
   name: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(10)
   @MaxLength(1000)
+  @IsSafeInput()
   description: string;
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(1)
+  @MinLength(10)
   @MaxLength(1000)
+  @IsSafeInput()
   goals: string;
 
   @IsEnum(DomainType)
