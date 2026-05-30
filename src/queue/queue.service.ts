@@ -12,7 +12,7 @@ import { SignInDto } from '../auth/auth-dto/sign-in.dto';
 import { SignOutWithAccessTokenDto } from '../auth/auth-dto/sign-out.dto';
 import { AccessTokenDto } from '../auth/auth-dto/access-token.dto';
 import { RefreshTokenDto } from '../auth/auth-dto/refresh-token.dto';
-import { AuthRefreshDto } from 'src/auth/auth-dto/auth-refresh.dto';
+import { AuthRefreshDto } from '../auth/auth-dto/auth-refresh.dto';
 
 @Injectable()
 export class QueueService {

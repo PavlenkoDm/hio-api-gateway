@@ -15,6 +15,7 @@ import {
   Min,
   Max,
   IsDateString,
+  IsDefined,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -199,14 +200,17 @@ export class PublishDto {
 
 // Main DTO
 export class CreateProjectDto {
+  @IsDefined()
   @ValidateNested()
   @Type(() => BasicsDto)
   basics: BasicsDto;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => TeamDto)
   team: TeamDto;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => PublishDto)
   publish: PublishDto;

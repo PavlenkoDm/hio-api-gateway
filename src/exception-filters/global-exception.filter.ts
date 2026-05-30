@@ -10,6 +10,14 @@ import { Request, Response } from 'express';
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
+    // // Временный лог для диагностики — удалим после
+    // console.log('EXCEPTION TYPE:', exception?.constructor?.name);
+    // console.log('EXCEPTION:', JSON.stringify(exception, null, 2));
+    // console.log('IS HTTP:', exception instanceof HttpException);
+    // console.log('STATUS:', exception?.status);
+    // console.log('RESPONSE:', exception?.response);
+    // console.log('EXCEPTION STACK:', exception?.stack);
+    // // Временный лог конец
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

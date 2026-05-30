@@ -60,7 +60,7 @@ export class ProjectsController {
   @Patch('update/:id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateProjectDto: Partial<UpdateProjectDto>,
+    @Body() updateProjectDto: UpdateProjectDto,
   ) {
     return this.projectsService.updateProject(id, updateProjectDto);
   }
