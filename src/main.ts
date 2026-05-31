@@ -1,3 +1,5 @@
+import './tracing';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
@@ -31,6 +33,9 @@ async function bootstrap() {
       queueOptions: {
         durable: true,
       },
+      socketOptions: {
+        tls: {} as any,
+      },
     },
   });
   app.connectMicroservice<MicroserviceOptions>({
@@ -40,6 +45,9 @@ async function bootstrap() {
       queue: QueueNames.PROJECTS,
       queueOptions: {
         durable: true,
+      },
+      socketOptions: {
+        tls: {} as any,
       },
     },
   });

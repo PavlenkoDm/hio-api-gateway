@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-//import { APP_FILTER } from '@nestjs/core';
+
 import request from 'supertest';
 import { of, throwError } from 'rxjs';
-//import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { AppModule } from '../src/app.module';
 import { QueueClientsNames } from '../src/queue/constants/queue.constants';
-//import { GlobalExceptionFilter } from '../src/exception-filters/global-exception.filter';
+
 import {
   DomainType,
   ProjectType,
@@ -20,25 +19,13 @@ import {
 
 // ─────────────────────────────────────────────────────────────
 // SECTION 1: Мок ClientProxy
-//
-// ЧТО ЭТО: вместо реального RabbitMQ подключения мокируем
-// ClientProxy — объект который NestJS использует для отправки
-// сообщений в очередь.
-//
-// ДЛЯ ЧЕГО: изолируем Gateway от RabbitMQ и микросервиса.
-// Тестируем только HTTP pipeline самого Gateway.
 // ─────────────────────────────────────────────────────────────
 const mockClientProxy = {
   send: jest.fn(),
-  // connect() вызывается при инициализации модуля —
-  // возвращаем resolved Promise чтобы приложение стартовало
+
   connect: jest.fn().mockResolvedValue(undefined),
   close: jest.fn().mockResolvedValue(undefined),
 };
-
-// ─────────────────────────────────────────────────────────────
-// SECTION 2: Фабричные функции тестовых данных
-// ─────────────────────────────────────────────────────────────
 
 function makeProjectResponse() {
   return {
@@ -129,7 +116,7 @@ function makeValidStartDto() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// SECTION 3: Тесты
+// SECTION 3: Tests
 // ─────────────────────────────────────────────────────────────
 
 describe('Projects API (integration)', () => {
@@ -139,9 +126,7 @@ describe('Projects API (integration)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      // overrideProvider заменяет реальный ClientProxy на мок.
-      // AUTH_QUEUE_CLIENT и PROJECTS_QUEUE_CLIENT — оба нужно заменить,
-      // иначе NestJS попытается подключиться к реальному RabbitMQ при старте.
+
       .overrideProvider(QueueClientsNames.PROJECTS_QUEUE_CLIENT)
       .useValue(mockClientProxy)
       .overrideProvider(QueueClientsNames.AUTH_QUEUE_CLIENT)
@@ -150,8 +135,6 @@ describe('Projects API (integration)', () => {
 
     app = moduleFixture.createNestApplication();
 
-    // Применяем те же настройки что в main.ts —
-    // иначе ValidationPipe не будет работать в тестах
     app.setGlobalPrefix('api', { exclude: ['/'] });
     app.useGlobalPipes(
       new ValidationPipe({
@@ -173,15 +156,13 @@ describe('Projects API (integration)', () => {
   });
 
   // ───────────────────────────────────────────────────────────
-  // GET /api/projects — получить все проекты
+  // GET /api/projects
   // ───────────────────────────────────────────────────────────
   describe('GET /api/projects', () => {
     it('should return 200 with array of projects', async () => {
-      // Arrange
       const projects = [makeProjectResponse()];
       mockClientProxy.send.mockReturnValueOnce(of(projects));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .get('/api/projects')
         .expect(200);
@@ -190,10 +171,8 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 200 with empty array when no projects', async () => {
-      // Arrange
       mockClientProxy.send.mockReturnValueOnce(of([]));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .get('/api/projects')
         .expect(200);
@@ -202,12 +181,9 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 500 when microservice fails', async () => {
-      // Arrange
-      // Имитируем ошибку от микросервиса в формате RpcException
       const rpcError = { status: 500, message: 'Internal Server Error' };
       mockClientProxy.send.mockReturnValueOnce(throwError(() => rpcError));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .get('/api/projects')
         .expect(500);
@@ -217,15 +193,13 @@ describe('Projects API (integration)', () => {
   });
 
   // ───────────────────────────────────────────────────────────
-  // GET /api/projects/:id — получить проект по id
+  // GET /api/projects/:id
   // ───────────────────────────────────────────────────────────
   describe('GET /api/projects/:id', () => {
     it('should return 200 with project when found', async () => {
-      // Arrange
       const project = makeProjectResponse();
       mockClientProxy.send.mockReturnValueOnce(of(project));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .get('/api/projects/1')
         .expect(200);
@@ -234,14 +208,12 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 404 when project not found', async () => {
-      // Arrange
       const rpcError = {
         status: 404,
         message: 'Project with id 999 not found',
       };
       mockClientProxy.send.mockReturnValueOnce(throwError(() => rpcError));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .get('/api/projects/999')
         .expect(404);
@@ -250,30 +222,22 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 400 when id is not a number', async () => {
-      // Arrange
-      // ParseIntPipe в контроллере отклонит нечисловой id
-      // до того как запрос дойдёт до сервиса
-
-      // Act & Assert
       await request(app.getHttpServer())
         .get('/api/projects/not-a-number')
         .expect(400);
 
-      // send не должен вызываться — запрос отклонён на уровне pipe
       expect(mockClientProxy.send).not.toHaveBeenCalled();
     });
   });
 
   // ───────────────────────────────────────────────────────────
-  // POST /api/projects/create — создать проект
+  // POST /api/projects/create
   // ───────────────────────────────────────────────────────────
   describe('POST /api/projects/create', () => {
     it('should return 201 with created project', async () => {
-      // Arrange
       const project = makeProjectResponse();
       mockClientProxy.send.mockReturnValueOnce(of(project));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .post('/api/projects/create')
         .send(makeValidCreateDto())
@@ -284,7 +248,6 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 400 when name is too short', async () => {
-      // Arrange: name меньше 3 символов — нарушает MinLength(3)
       const invalidDto = {
         ...makeValidCreateDto(),
         basics: {
@@ -293,18 +256,15 @@ describe('Projects API (integration)', () => {
         },
       };
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .post('/api/projects/create')
         .send(invalidDto)
         .expect(400);
 
-      // ValidationPipe должен вернуть сообщение об ошибке
       expect(response.body.status).toBe(400);
     });
 
     it('should return 400 when required fields are missing', async () => {
-      // Arrange: отправляем пустой body
       await request(app.getHttpServer())
         .post('/api/projects/create')
         .send({})
@@ -314,7 +274,6 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 400 when domain is invalid enum value', async () => {
-      // Arrange
       const invalidDto = {
         ...makeValidCreateDto(),
         basics: {
@@ -333,15 +292,13 @@ describe('Projects API (integration)', () => {
   });
 
   // ───────────────────────────────────────────────────────────
-  // DELETE /api/projects/:id — удалить проект
+  // DELETE /api/projects/:id
   // ───────────────────────────────────────────────────────────
   describe('DELETE /api/projects/:id', () => {
     it('should return 200 with deleted project data', async () => {
-      // Arrange
       const project = makeProjectResponse();
       mockClientProxy.send.mockReturnValueOnce(of(project));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .delete('/api/projects/1')
         .expect(200);
@@ -350,14 +307,12 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 404 when project not found', async () => {
-      // Arrange
       const rpcError = {
         status: 404,
         message: 'Project with id 999 not found',
       };
       mockClientProxy.send.mockReturnValueOnce(throwError(() => rpcError));
 
-      // Act & Assert
       await request(app.getHttpServer())
         .delete('/api/projects/999')
         .expect(404);
@@ -365,7 +320,7 @@ describe('Projects API (integration)', () => {
   });
 
   // ───────────────────────────────────────────────────────────
-  // PUT /api/projects/start/:id — запустить проект
+  // PUT /api/projects/start/:id
   // ───────────────────────────────────────────────────────────
   describe('PUT /api/projects/start/:id', () => {
     it('should return 200 with active project', async () => {
@@ -378,7 +333,6 @@ describe('Projects API (integration)', () => {
       };
       mockClientProxy.send.mockReturnValueOnce(of(startedProject));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .put('/api/projects/start/1')
         .send(makeValidStartDto())
@@ -390,7 +344,6 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 400 when tasks array has less than 3 items', async () => {
-      // Arrange: ArrayMinSize(3) требует минимум 3 задачи
       const invalidDto = {
         ...makeValidStartDto(),
         basics: {
@@ -408,7 +361,6 @@ describe('Projects API (integration)', () => {
     });
 
     it('should return 400 when members array is empty', async () => {
-      // Arrange: ArrayMinSize(1) требует хотя бы одного участника
       const invalidDto = {
         ...makeValidStartDto(),
         team: {
@@ -427,18 +379,16 @@ describe('Projects API (integration)', () => {
   });
 
   // ───────────────────────────────────────────────────────────
-  // PATCH /api/projects/update/:id — обновить проект
+  // PATCH /api/projects/update/:id
   // ───────────────────────────────────────────────────────────
   describe('PATCH /api/projects/update/:id', () => {
     it('should return 200 with updated project', async () => {
-      // Arrange
       const updated = {
         ...makeProjectResponse(),
         basics: { ...makeProjectResponse().basics, name: 'Updated Name' },
       };
       mockClientProxy.send.mockReturnValueOnce(of(updated));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .patch('/api/projects/update/1')
         .send({ basics: { name: 'Updated Name' } })
@@ -462,7 +412,6 @@ describe('Projects API (integration)', () => {
   // ───────────────────────────────────────────────────────────
   describe('PUT /api/projects/update-members/:projectId', () => {
     it('should return 200 with updated members', async () => {
-      // Arrange
       const members = [
         {
           userId: 'user-1',
@@ -475,7 +424,6 @@ describe('Projects API (integration)', () => {
       ];
       mockClientProxy.send.mockReturnValueOnce(of(members));
 
-      // Act & Assert
       const response = await request(app.getHttpServer())
         .put('/api/projects/update-members/1')
         .send(members)

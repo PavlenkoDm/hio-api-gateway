@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 //import { AuthModule } from './auth/auth.module';
 import { QueueModule } from './queue/queue.module';
 import { GlobalExceptionFilter } from './exception-filters/global-exception.filter';
-//import { RedisModule } from './redis/redis.module';
+import { RedisModule } from './redis/redis.module';
 import { ProjectsModule } from './projects/projects.module';
 
 @Module({
@@ -14,7 +14,7 @@ import { ProjectsModule } from './projects/projects.module';
     //AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     QueueModule,
-    //RedisModule,
+    RedisModule,
     ProjectsModule,
   ],
   controllers: [AppController],

@@ -1,13 +1,31 @@
-FROM node:22.17 AS builder
+FROM node:22 AS builder
+
 WORKDIR /app
-COPY package.json package-lock.json ./
+
+COPY package*.json ./
+
 RUN npm ci
-COPY . .
+
+COPY nest-cli.json ./
+COPY tsconfig*.json ./
+
+COPY src/ ./src/
+
 RUN npm run build
 
-FROM node:22.17 AS base
+
+FROM node:22-alpine AS runner
+
+ENV NODE_ENV=production
+
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --production
+
+COPY package*.json ./
+
+RUN npm ci --omit=dev
+
 COPY --from=builder /app/dist ./dist
-CMD ["node", "dist/main.js"]
+
+EXPOSE 3111
+
+CMD ["node", "dist/main"]

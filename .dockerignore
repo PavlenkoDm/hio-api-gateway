@@ -3,6 +3,14 @@
 .github
 ./node_modules
 ./dist
-README.md
 .prettierrc
+node_modules
+dist
+coverage
+.git
+.gitignore
 .env
+.env.*
+*.md
+docker-compose*.yml
+Dockerfile*

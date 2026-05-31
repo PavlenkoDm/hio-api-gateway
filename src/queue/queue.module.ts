@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule, RmqOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 
 import { QueueClientsNames, QueueNames } from './constants/queue.constants';
@@ -13,14 +13,18 @@ import { ProjectsQueueService } from './projects-queue.service';
       {
         name: QueueClientsNames.AUTH_QUEUE_CLIENT,
         inject: [ConfigService],
-        useFactory: async (configService: ConfigService): Promise<object> => ({
+        useFactory: async (
+          configService: ConfigService,
+        ): Promise<RmqOptions> => ({
           transport: Transport.RMQ,
           options: {
             urls: [configService.get<string>('RABBITMQ_CONNECTION_URL')],
             queue: QueueNames.AUTH,
             queueOptions: {
               durable: true,
-              prefetchCount: 1,
+            },
+            socketOptions: {
+              tls: {} as any,
             },
           },
         }),
@@ -28,14 +32,18 @@ import { ProjectsQueueService } from './projects-queue.service';
       {
         name: QueueClientsNames.PROJECTS_QUEUE_CLIENT,
         inject: [ConfigService],
-        useFactory: async (configService: ConfigService): Promise<object> => ({
+        useFactory: async (
+          configService: ConfigService,
+        ): Promise<RmqOptions> => ({
           transport: Transport.RMQ,
           options: {
             urls: [configService.get<string>('RABBITMQ_CONNECTION_URL')],
             queue: QueueNames.PROJECTS,
             queueOptions: {
               durable: true,
-              prefetchCount: 1,
+            },
+            socketOptions: {
+              tls: {} as any,
             },
           },
         }),

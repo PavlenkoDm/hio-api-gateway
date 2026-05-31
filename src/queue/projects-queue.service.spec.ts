@@ -20,17 +20,9 @@ import {
 // ─────────────────────────────────────────────────────────────
 // SECTION 1: Мок ClientProxy
 // ─────────────────────────────────────────────────────────────
-
-// ClientProxy — это объект подключения к RabbitMQ.
-// Мокируем только метод send() — именно он отправляет
-// сообщения в очередь и возвращает Observable с ответом.
 const mockClientProxy: Partial<ClientProxy> = {
   send: jest.fn(),
 };
-
-// ─────────────────────────────────────────────────────────────
-// SECTION 2: Фабричные функции тестовых данных
-// ─────────────────────────────────────────────────────────────
 
 function makeCreateProjectDto() {
   return {
@@ -100,7 +92,7 @@ function makeTeamMember() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// SECTION 3: Тесты
+// SECTION 2: Tests
 // ─────────────────────────────────────────────────────────────
 
 describe('ProjectsQueueService', () => {
@@ -121,9 +113,7 @@ describe('ProjectsQueueService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectsQueueService,
-        // Inject токен — это строка-идентификатор по которой NestJS
-        // находит нужный ClientProxy среди всех зарегистрированных клиентов.
-        // QueueClientsNames.PROJECTS_QUEUE_CLIENT = 'PROJECTS_QUEUE_CLIENT'
+
         {
           provide: QueueClientsNames.PROJECTS_QUEUE_CLIENT,
           useValue: mockClientProxy,
@@ -138,23 +128,13 @@ describe('ProjectsQueueService', () => {
     expect(service).toBeDefined();
   });
 
-  // ───────────────────────────────────────────────────────────
-  // Формирование сообщений для RabbitMQ
-  // Проверяем что каждый метод вызывает send() с правильными
-  // cmd и payload — именно это получит микросервис
-  // ───────────────────────────────────────────────────────────
   describe('RabbitMQ message formation', () => {
     it('queueProjectCreate: should send correct cmd and payload', (done) => {
-      // Arrange
       const dto = makeCreateProjectDto();
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(of({ id: 1 }));
 
-      // Act
-      // Подписываемся напрямую на Observable — не оборачиваем в Promise,
-      // потому что тестируем сам сервис очереди, а не ProjectsService
       service.queueProjectCreate(dto as any).subscribe({
         next: () => {
-          // Assert: send вызван с правильным cmd и dto как payload
           expect(mockClientProxy.send).toHaveBeenCalledWith(
             { cmd: ProjectsQueueEvents.CREATE_PROJECT },
             dto,
@@ -166,12 +146,8 @@ describe('ProjectsQueueService', () => {
     });
 
     it('queueProjectDelete: should send id wrapped in object', (done) => {
-      // Arrange
-      // Важно: id передаётся не напрямую, а обёрнутым в { id }
-      // Это формат который ожидает микросервис
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(of({ id: 1 }));
 
-      // Act
       service.queueProjectDelete(42).subscribe({
         next: () => {
           expect(mockClientProxy.send).toHaveBeenCalledWith(
@@ -185,10 +161,8 @@ describe('ProjectsQueueService', () => {
     });
 
     it('queueProjectGet: should send id wrapped in object', (done) => {
-      // Arrange
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(of({ id: 7 }));
 
-      // Act
       service.queueProjectGet(7).subscribe({
         next: () => {
           expect(mockClientProxy.send).toHaveBeenCalledWith(
@@ -202,14 +176,11 @@ describe('ProjectsQueueService', () => {
     });
 
     it('queueProjectStart: should send id and dto together', (done) => {
-      // Arrange
       const dto = makeStartProjectDto();
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(of({}));
 
-      // Act
       service.queueProjectStart(5, dto as any).subscribe({
         next: () => {
-          // startProject объединяет id и dto в один объект
           expect(mockClientProxy.send).toHaveBeenCalledWith(
             { cmd: ProjectsQueueEvents.START_PROJECT },
             { id: 5, startProjectDto: dto },
@@ -221,11 +192,9 @@ describe('ProjectsQueueService', () => {
     });
 
     it('queueUpdateProjectMembers: should send projectId and members', (done) => {
-      // Arrange
       const members = [makeTeamMember()];
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(of(members));
 
-      // Act
       service.queueUpdateProjectMembers(3, members as any).subscribe({
         next: () => {
           expect(mockClientProxy.send).toHaveBeenCalledWith(
@@ -239,11 +208,9 @@ describe('ProjectsQueueService', () => {
     });
 
     it('queueUpdateProject: should send id and updateDto', (done) => {
-      // Arrange
       const dto = { basics: { name: 'New Name' } };
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(of({}));
 
-      // Act
       service.queueUpdateProject(8, dto as any).subscribe({
         next: () => {
           expect(mockClientProxy.send).toHaveBeenCalledWith(
@@ -257,11 +224,8 @@ describe('ProjectsQueueService', () => {
     });
 
     it('queueProjectsGet: should send empty object as payload', (done) => {
-      // Arrange
-      // getProjects не требует параметров — отправляем пустой объект
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(of([]));
 
-      // Act
       service.queueProjectsGet().subscribe({
         next: () => {
           expect(mockClientProxy.send).toHaveBeenCalledWith(
@@ -275,22 +239,13 @@ describe('ProjectsQueueService', () => {
     });
   });
 
-  // ───────────────────────────────────────────────────────────
-  // Обработка ошибок
-  // Проверяем что catchError правильно преобразует разные
-  // форматы ошибок в HttpException
-  // ───────────────────────────────────────────────────────────
   describe('error handling in projectsQueueSender', () => {
     it('should convert object error with status to HttpException', (done) => {
-      // Arrange
-      // Формат ошибки от микросервиса через RpcException:
-      // объект с полями status и message
       const rpcError = { status: 404, message: 'Project not found' };
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(
         throwError(() => rpcError),
       );
 
-      // Act
       service.queueProjectGet(999).subscribe({
         next: () => done.fail('Should have errored'),
         error: (err) => {
@@ -304,13 +259,11 @@ describe('ProjectsQueueService', () => {
     });
 
     it('should convert 500 status error to HttpException', (done) => {
-      // Arrange
       const rpcError = { status: 500, message: 'Internal Server Error' };
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(
         throwError(() => rpcError),
       );
 
-      // Act
       service.queueProjectGet(1).subscribe({
         next: () => done.fail('Should have errored'),
         error: (err) => {
@@ -322,18 +275,14 @@ describe('ProjectsQueueService', () => {
     });
 
     it('should convert generic Error object to Error instance', (done) => {
-      // Arrange
-      // Неизвестная ошибка не от микросервиса — нет поля status
       const genericError = new Error('Connection refused');
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(
         throwError(() => genericError),
       );
 
-      // Act
       service.queueProjectGet(1).subscribe({
         next: () => done.fail('Should have errored'),
         error: (err) => {
-          // Пробрасывается как есть через throwError(() => new Error(error))
           expect(err).toBeInstanceOf(Error);
           done();
         },
@@ -341,22 +290,14 @@ describe('ProjectsQueueService', () => {
     });
 
     it('should pass through HttpException from upstream without wrapping', (done) => {
-      // Arrange
-      // Если где-то выше уже создан HttpException —
-      // catchError его тоже перехватит и обернёт в новый Error.
-      // Это важно знать: catchError не различает HttpException и обычные ошибки
-      // если у объекта нет поля .status в нужном формате.
       const httpError = new HttpException('Forbidden', HttpStatus.FORBIDDEN);
       (mockClientProxy.send as jest.Mock).mockReturnValueOnce(
         throwError(() => httpError),
       );
 
-      // Act
       service.queueProjectGet(1).subscribe({
         next: () => done.fail('Should have errored'),
         error: (err) => {
-          // HttpException имеет .status — поэтому catchError его подхватит
-          // и создаст новый HttpException с тем же статусом
           expect(err).toBeInstanceOf(HttpException);
           expect(err.getStatus()).toBe(HttpStatus.FORBIDDEN);
           done();
